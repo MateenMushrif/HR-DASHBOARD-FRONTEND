@@ -204,9 +204,9 @@ interface MeResponse {
   };
 }
 
-export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: MeResponse["user"] }) {
+export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" variant="floating" {...props}>
+    <Sidebar collapsible="icon" variant="floating" >
       <div className="glass-card flex h-full flex-col">
         <SidebarHeader>
           <SidebarMenu>
@@ -226,12 +226,12 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          <NavMain items={data.navMain} />
+          {/* <NavMain items={data.navMain} /> */}
           {/* <NavProjects projects={data.projects} /> */}
           <NavSecondary items={data.navSecondary} className="mt-auto" />
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={user} />
+          {/* <NavUser user={user} /> */}
         </SidebarFooter>
       </div>
     </Sidebar>
