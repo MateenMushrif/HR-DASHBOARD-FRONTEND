@@ -15,6 +15,10 @@ interface Department {
 interface Employee {
     id: number
     name: string
+    fullName?: string
+    employeeName?: string
+    firstName?: string
+    lastName?: string
     department?: string | Department
     status?: "ACTIVE" | "ON_LEAVE" | "INACTIVE" | string
     role?: string
@@ -58,7 +62,8 @@ export default function EmployeesOnLeaveCard() {
                 )
 
                 setEmployeesOnLeave(onLeave)
-            } catch (err: any) {
+            } catch (error: unknown) {
+                const err = error instanceof Error ? error : new Error(String(error))
                 console.error("Error fetching employees on leave:", err)
                 setError(err.message || "Something went wrong")
             } finally {
