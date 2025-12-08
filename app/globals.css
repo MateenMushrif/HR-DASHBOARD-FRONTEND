@@ -1,26 +1,398 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(55.415% 0.27964 295.4 / 0.241);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  /* Softer pastel chart colors for light background */
+  --chart-1: oklch(59.284% 0.25711 297.62 / 0.434);
+  /* violet / purple */
+  --chart-2: oklch(66.906% 0.18376 248.826 / 0.482);
+  /* soft indigo / blue */
+  --chart-3: oklch(62.793% 0.25768 29.223 / 0.759);
+  /* teal / cyan */
+  --chart-4: oklch(89.045% 0.16705 94.184 / 0.466);
+  /* warm golden */
+  --chart-5: oklch(90.615% 0.24835 131.217 / 0.381);
+  /* soft coral */
+
+  --sidebar: hsla(263, 71%, 73%, 0.332);
+  /* translucent tinted glass */
+  --sidebar-foreground: hsl(0, 0%, 100%);
+  /* light text on it */
+  --sidebar-primary: hsl(248 90% 65%);
+  /* main accent for logo / strong items */
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsla(269, 98%, 76%, 0.425);
+  /* hover / subtle rows */
+  --sidebar-accent-foreground: hsl(0, 0%, 0%);
+  --sidebar-border: hsla(0, 0%, 100%, 0.18);
+  /* soft glassy border */
+  --sidebar-ring: hsl(248, 59%, 42%);
+
+  --background: oklch(89.755% 0.0001 271.152);
+  --foreground: oklch(0% 0 0);
+
+  /* Glass + glow for LIGHT theme */
+  --glass-main: hsla(247, 78%, 91%, 0.053);
+  /* sidebar glass tint – same family as --sidebar */
+  --glass-sidebar: hsla(267, 59%, 26%, 0.86);
+  --glass-border: hsla(0, 0%, 100%, 0.505);
+  --shadow-color: hsla(240, 23%, 10%, 0.45);
+
+  /* Soft background gradient colors */
+  --gradient-1: hsl(190, 60%, 52%);
+  /* purple */
+  --gradient-2: hsl(220, 72%, 60%);
+  /* blue */
+  --gradient-3: hsl(190, 60%, 52%);
+  /* cyan */
+
+  /* Tool gradients */
+  --tool-grad-1: hsla(263, 100%, 70%, 0.544);
+  --tool-grad-2: hsla(320, 100%, 79%, 0.427);
+  --tool-grad-3: hsla(0, 0%, 100%, 0.377);
+
+  /* inner-card  */
+  --inner-grad-1: hsla(263, 100%, 70%, 0.17);
+  --inner-grad-2: hsla(263, 100%, 70%, 0.17);
+  --inner-grad-3: hsla(263, 100%, 70%, 0.07);
+
+  --chart-text: hsl(0, 0%, 30%);
+}
+
+/* 🔥 NEW DARK THEME tuned to match your current light colors */
+.dark {
+  /* Base surface & text */
+  --background: hsl(231, 95%, 17%);
+  --foreground: hsl(0 0% 98%);
+
+  --card: hsl(248 38% 12%);
+  --card-foreground: var(--foreground);
+
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+
+  /* Accents */
+  --primary: hsl(278 85% 72%);
+  --primary-foreground: hsl(248 40% 10%);
+
+  --secondary: hsl(248 28% 16%);
+  --secondary-foreground: var(--foreground);
+
+  --muted: hsl(248 22% 18%);
+  --muted-foreground: hsl(260 15% 72%);
+
+  --accent: hsl(264, 100%, 86%);
+  --accent-foreground: hsl(240 40% 5%);
+
+  --destructive: hsl(0 72% 60%);
+  --border: hsla(0, 0%, 100%, 0.14);
+  --input: hsla(0, 0%, 100%, 0.18);
+  --ring: hsl(268 90% 70%);
+
+  /* Softer but vivid chart colors for dark backgrounds */
+  --chart-1: oklch(53.226% 0.29263 294.216 / 0.821);
+  /* deep violet */
+  --chart-2: oklch(58% 0.20 248.826);
+  /* brighter blue-indigo */
+  --chart-3: oklch(55% 0.23 29.223);
+  /* warm orange/coral */
+  --chart-4: oklch(63% 0.19 94.184);
+  /* golden-yellow but darker */
+  --chart-5: oklch(60% 0.22 131.217);
+  /* greenish teal */
+
+  /* Sidebar (glass, but deeper and readable) */
+  --sidebar: hsla(271, 74%, 31%, 0.449);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: hsla(264, 100%, 50%, 0.967);
+  --sidebar-primary-foreground: hsl(240 40% 5%);
+  --sidebar-accent: hsla(264, 98%, 32%, 0.453);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: hsla(0, 0%, 100%, 0.16);
+  --sidebar-ring: var(--ring);
+
+  /* Glass + glow for LIGHT theme */
+  --glass-main: hsla(247, 78%, 91%, 0.053);
+  /* sidebar glass tint – same family as --sidebar */
+  --glass-sidebar: hsla(267, 59%, 26%, 0.597);
+  --glass-border: hsla(0, 0%, 100%, 0.371);
+  --shadow-color: hsla(240, 22%, 10%, 0.271);
+
+  /* Dark gradients – same hues, darker energy */
+  --gradient-1: hsl(190, 92%, 60%);
+  --gradient-2: hsl(220, 90%, 65%);
+  --gradient-3: hsl(190, 92%, 60%);
+
+  /* Tool gradients */
+  --tool-grad-1: hsla(263, 98%, 58%, 0.415);
+  --tool-grad-2: hsla(283, 99%, 53%, 0.633);
+  --tool-grad-3: hsla(313, 100%, 63%, 0.429);
+
+  /* inner-card  */
+  --inner-grad-1: hsla(263, 100%, 50%, 0.245);
+  --inner-grad-2: hsla(278, 83%, 51%, 0.199);
+  --inner-grad-3: hsla(306, 82%, 42%, 0.148);
+
+  --chart-text: hsl(0, 0%, 90%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 0% 0%, var(--gradient-1) 0, transparent 55%),
+    radial-gradient(circle at 100% 0%, var(--gradient-2) 0, transparent 55%),
+    radial-gradient(circle at 50% 100%, var(--gradient-3) 0, transparent 60%),
+    var(--background);
+}
+
+@layer components {
+
+  /* Big outer container (main dashboard panel) */
+  .glass-main {
+    border-radius: var(--radius-xl);
+    background: var(--glass-main);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 24px 80px var(--shadow-color);
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
+  }
+
+  /* Sidebar panel (the one wrapping your existing sidebar content) */
+  .glass-sidebar {
+    border-radius: var(--radius-xl);
+    background: var(--glass-sidebar);
+
+    /* slightly tinted border, not too loud */
+    border: 1px solid color-mix(in srgb, var(--gradient-1) 18%, var(--glass-border) 82%);
+
+    /* heavier, deeper shadow than cards */
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--gradient-1) 14%, transparent),
+      4px 14px 32px hsla(240, 30%, 8%, 0.85);
+
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+    z-index: -1;
+  }
+
+  /* Smaller cards inside the main content area */
+  .glass-card {
+    border-radius: var(--radius-lg);
+
+    /* base frosted background */
+    background: var(--glass-main);
+
+    /* subtle colored edge, like a glow around the card */
+    border: 1px solid color-mix(in srgb, var(--gradient-1) 35%, var(--glass-border) 65%);
+
+    /* soft colored glow + depth shadow */
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--gradient-1) 22%, transparent),
+      2px 5px 8px hsla(248, 29%, 29%, 0.236),
+      inset 3px 3px 2px hsla(0, 0%, 100%, 0.200),
+      inset -3px -3px 2px hsla(0, 0%, 100%, 0.300);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    z-index: 2;
+  }
+
+  /* 👉 Inner panel inside each glass card */
+  .inner-card {
+    /* Glossy, softly lit surface */
+    background: linear-gradient(135deg,
+        var(--inner-grad-1) 0%,
+        var(--inner-grad-2) 60%,
+        var(--inner-grad-3) 100%);
+
+    border-radius: calc(var(--radius-lg) - 4px);
+    padding: 1rem;
+
+    /* gentle inner highlight to fake gloss */
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.045) inset,
+      0 -12px 30px hsla(0, 0%, 100%, 0.068) inset;
+
+    z-index: -1;
+  }
+
+  .inner-card-clean {
+    /* Glossy, softly lit surface */
+    background: linear-gradient(180deg,
+        hsla(263, 100%, 70%, 0.045) 0%,
+        hsla(268, 100%, 80%, 0.022)) 60%,
+      hsla(320, 100%, 82%, 0.055) 100%;
+
+    border-radius: calc(var(--radius-lg) - 4px);
+    padding: 1rem;
+
+    /* gentle inner highlight to fake gloss */
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.045) inset,
+      0 -12px 30px hsla(0, 0%, 100%, 0.168) inset;
+
+    z-index: -1;
+  }
+
+  /* 👉 Inner panel inside each glass card */
+  .tooltip-card {
+    /* Glossy, softly lit surface */
+    background: linear-gradient(180deg,
+        var(--tool-grad-1) 0%,
+        var(--tool-grad-2) 60%,
+        var(--tool-grad-3) 100%);
+
+    border-radius: calc(var(--radius-lg) - 4px);
+    padding: 1rem;
+
+    /* gentle inner highlight to fake gloss */
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.345) inset,
+      0 -12px 30px hsla(0, 0%, 100%, 0.268) inset;
+
+    z-index: -1;
+  }
+
+  .badge-chip {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .badge-intern {
+    background: color-mix(in srgb, var(--accent) 30%, transparent 90%);
+    color: var(--accent-foreground);
+  }
+
+  .badge-employee {
+    background: color-mix(in srgb, var(--secondary) 30%, transparent 90%);
+    color: var(--secondary-foreground);
+  }
+
+  /* Base pill */
+  .badge-status {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* ACTIVE → green */
+  .status-active {
+    background: color-mix(in srgb, hsla(125, 100%, 56%, 0.614) 70%, transparent);
+    color: hsla(129, 100%, 33%, 0.651);
+  }
+
+  /* ON_LEAVE → red */
+  .status-onleave {
+    background: color-mix(in srgb, var(--destructive) 35%, transparent);
+    color: var(--destructive);
+  }
+
+  /* INACTIVE → neutral */
+  .status-inactive {
+    background: color-mix(in srgb, var(--muted) 40%, transparent);
+    color: var(--muted-foreground);
+  }
+
+  .glass-input {
+    @apply w-full rounded-md px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2;
+
+    /* Glassy look */
+    background: var(--glass-main);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .glass-crumb {
+    @apply rounded-xl px-3 py-1 text-xs font-medium backdrop-blur-md transition bg-[var(--glass-main)] border border-[var(--glass-border)] text-foreground hover:opacity-90;
+  }
+
+
+}
+
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
