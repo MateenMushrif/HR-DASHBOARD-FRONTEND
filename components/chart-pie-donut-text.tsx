@@ -148,7 +148,7 @@ export default function EmployeesInternsDonutChart() {
 
     // ✅ Main chart render
     return (
-        <Card className="flex h-full w-full flex-col bg-transparent border-0 shadow-none">
+        <Card className="flex h-full w-full flex-col bg-transparent border-0 shadow-none p-0">
             <CardContent className="flex-1 pb-0">
                 {/* This wrapper makes it behave nicely in a grid cell */}
                 <div className="w-full h-[220px] sm:h-[240px] lg:h-[260px]">
@@ -166,7 +166,7 @@ export default function EmployeesInternsDonutChart() {
                                 dataKey="visitors"
                                 nameKey="browser"
                                 innerRadius={60}
-                                strokeWidth={5}
+                                strokeWidth={0}
                             >
                                 <Label
                                     content={({ viewBox }) => {
@@ -206,4 +206,3 @@ export default function EmployeesInternsDonutChart() {
         </Card>
     )
 }
-  
