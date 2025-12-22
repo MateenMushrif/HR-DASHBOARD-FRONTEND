@@ -1,4 +1,16 @@
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+// components/ui/chart.tsx
+import React from "react";
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    type TooltipContentProps,
+} from "recharts";
+
+/* -------------------- Types -------------------- */
 
 export interface HirePoint {
     month: string;
@@ -10,63 +22,73 @@ interface StackedAreaChartProps {
     data: HirePoint[];
 }
 
-const CustomTooltip = ({
-    active,
-    payload,
-    label,
-}: any) => {
+type ValueType = number | string;
+type NameType = string;
+
+/* -------------------- Custom Tooltip -------------------- */
+
+function CustomTooltip(
+    props: TooltipContentProps<ValueType, NameType>
+) {
+    const { active, payload, label } = props;
+
     if (!active || !payload || payload.length === 0) return null;
 
     return (
-        <div className="glass-card p-0.5">
-            <div className="tooltip-card px-3 py-2 text-xs">
-                <p className="mb-1 text-[10px] text-[var(--chart-text)]">{label}</p>
+        <div className="tooltip-card p-3 py-2 text-xs">
+            <p className="mb-1 text-[12px] text-[var(--chart-text)]">
+                {label}
+            </p>
 
-                {payload.map((item: any) => (
+            {payload.map((item, index) => {
+                const key = String(item.dataKey ?? item.name ?? index);
+                const color = item.color ?? "#fff";
+                const displayName = item.name ?? String(item.dataKey ?? "");
+                const displayValue = item.value ?? "";
+
+                return (
                     <div
-                        key={String(item.dataKey)}
+                        key={key}
                         className="flex items-center justify-between gap-2"
                     >
                         <span className="flex items-center gap-1">
                             <span
                                 className="h-2 w-2 rounded-full"
-                                style={{ backgroundColor: item.color || "#fff" }}
+                                style={{ backgroundColor: color }}
                             />
                             <span className="text-[11px] text-foreground/80">
-                                {item.name ?? item.dataKey}
+                                {displayName}
                             </span>
                         </span>
-                        <span className="text-[11px] text-foreground">{item.value}</span>
+                        <span className="text-[13px] text-foreground">
+                            {displayValue}
+                        </span>
                     </div>
-                ))}
-            </div>
+                );
+            })}
         </div>
     );
-};
+}
 
-const StackedAreaChart = ({ data }: StackedAreaChartProps) => {
+/* -------------------- Stacked Area Chart -------------------- */
+
+const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ data }) => {
     return (
-        // 🔑 This wrapper controls the size within the card/grid
         <div className="w-full h-[240px] md:h-[260px] lg:h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={data}
-                    margin={{
-                        top: 20,
-                        right: 0,
-                        left: 0,
-                        bottom: 4,
-                    }}
+                    margin={{ top: 20, right: 0, left: 0, bottom: 4 }}
                 >
                     <defs>
                         <linearGradient id="employeesGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0d00ffff" stopOpacity={0.9} />
-                            <stop offset="100%" stopColor="#00a2ffff" stopOpacity={0} />
+                            <stop offset="0%" stopColor="var(--chart-5)" stopOpacity={0.9} />
+                            <stop offset="100%" stopColor="var(--chart-5)" stopOpacity={0} />
                         </linearGradient>
 
                         <linearGradient id="internsGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#ee00ffff" stopOpacity={0.9} />
-                            <stop offset="100%" stopColor="#ee00ffff" stopOpacity={0} />
+                            <stop offset="0%" stopColor="var(--chart-0)" stopOpacity={0.9} />
+                            <stop offset="100%" stopColor="var(--chart-0)" stopOpacity={0} />
                         </linearGradient>
                     </defs>
 
@@ -76,7 +98,7 @@ const StackedAreaChart = ({ data }: StackedAreaChartProps) => {
                         tickLine={false}
                         tickMargin={12}
                         tick={{
-                            fill: "var(--chart-text)",
+                            fill: "var(--muted-foreground)",
                             fontSize: 14,
                         }}
                     />
@@ -87,7 +109,7 @@ const StackedAreaChart = ({ data }: StackedAreaChartProps) => {
                         tickLine={false}
                         tickMargin={18}
                         tick={{
-                            fill: "var(--chart-text)",
+                            fill: "var(--muted-foreground)",
                             fontSize: 14,
                         }}
                     />
@@ -104,15 +126,18 @@ const StackedAreaChart = ({ data }: StackedAreaChartProps) => {
                         type="monotone"
                         dataKey="employees"
                         name="Employees"
-                        stroke="#0d00ff50"
+                        stroke="var(--chart-4)"
                         fill="url(#employeesGradient)"
+                        activeDot={{ r: 4 }}
                     />
+
                     <Area
                         type="monotone"
                         dataKey="interns"
                         name="Interns"
-                        stroke="#ee00ff5c"
+                        stroke="var(--chart-0)"
                         fill="url(#internsGradient)"
+                        activeDot={{ r: 4 }}
                     />
                 </AreaChart>
             </ResponsiveContainer>

@@ -44,19 +44,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const item = payload[0]
 
     return (
-        <div className="glass-card p-0.5">
-            <div className="tooltip-card px-3 py-2 text-xs">
-                <p className="mb-1 text-[10px] text-[var(--chart-text)]">{label}</p>
+            <div className="tooltip-card px-3 py-2 text-xs min-w-30">
+                <p className="mb-1 text-[12px] text-[var(--chart-text)]">{label}</p>
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-foreground/80">
+                    <span className="text-[11px] text-muted-foreground">
                         Employees
                     </span>
-                    <span className="text-[11px] text-foreground font-semibold">
+                    <span className="text-[15px] text-foreground font-semibold">
                         {item.value}
                     </span>
                 </div>
             </div>
-        </div>
     )
 }
 
@@ -172,7 +170,7 @@ export default function EmployeesByDepartmentChart() {
                         tickLine={false}
                         tickMargin={8}
                         tick={{
-                            fill: "var(--chart-text)",
+                            fill: "var(--muted-foreground)",
                             fontSize: 12,
                         }}
                     />
@@ -181,7 +179,7 @@ export default function EmployeesByDepartmentChart() {
                         tickLine={false}
                         tickMargin={8}
                         tick={{
-                            fill: "var(--chart-text)",
+                            fill: "var(--muted-foreground)",
                             fontSize: 12,
                         }}
                     />

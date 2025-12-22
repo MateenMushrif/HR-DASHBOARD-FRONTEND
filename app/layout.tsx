@@ -1,7 +1,30 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "./variables.css";
 import "./globals.css";
 import { ThemeInit } from "@/components/theme-init"
+import Script from "next/script";
+
+const themeInit = `(function(){
+  try {
+    var raw = localStorage.getItem('app_theme');
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s?.theme) document.documentElement.setAttribute('data-theme', s.theme);
+      if (s?.scheme) document.documentElement.setAttribute('data-scheme', s.scheme);
+    } else {
+      // no saved theme -> default to yellow/light
+      document.documentElement.setAttribute('data-theme', 'yellow');
+      document.documentElement.setAttribute('data-scheme', 'light');
+    }
+  } catch (e) {
+    // if anything goes wrong, still ensure default
+    document.documentElement.setAttribute('data-theme', 'yellow');
+    document.documentElement.setAttribute('data-scheme', 'light');
+  }
+})();`;
+
+
 
 
 const geistSans = Geist({
@@ -21,15 +44,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
-      >
-        <ThemeInit />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInit}
+        </Script>
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden `}>
         {children}
       </body>
     </html>

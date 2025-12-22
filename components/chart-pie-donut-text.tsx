@@ -78,7 +78,7 @@ export default function EmployeesInternsDonutChart() {
             {
                 browser: "employees",
                 visitors: employeesCount,
-                fill: "var(--chart-2)",
+                fill: "var(--chart-5)",
             },
             {
                 browser: "interns",

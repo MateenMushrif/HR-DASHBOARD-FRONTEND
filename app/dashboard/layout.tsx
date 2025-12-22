@@ -4,12 +4,10 @@ import { AppSidebar } from "@/components/app-sidebar";
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
@@ -18,7 +16,7 @@ import {
 import { fetchCurrentUser } from "@/lib/auth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import Link from "next/link";
 
 interface MeResponse {
     message: string;
@@ -35,26 +33,22 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
+    const pathname = usePathname();
+
     const [user, setUser] = useState<MeResponse["user"] | null>(null);
     const [loading, setLoading] = useState(true);
-
-
-    const pathname = usePathname();
 
     const isRootDashboard = pathname === "/dashboard";
 
     let secondCrumbLabel: string | null = null;
     let secondCrumbHref: string | null = null;
-    let currentPageLabel = "Overview";
+    let currentPageLabel = "Settings";
 
     if (pathname === "/dashboard") {
         currentPageLabel = "Dashboard";
     } else if (pathname === "/dashboard/employees") {
-        // Only 2 levels: Dashboard / Employees
         currentPageLabel = "Employees";
     } else if (pathname.startsWith("/dashboard/employees")) {
-        // Nested under employees, so we show:
-        // Dashboard / Employees / Something
         secondCrumbLabel = "Employees";
         secondCrumbHref = "/dashboard/employees";
 
@@ -65,14 +59,11 @@ export default function DashboardLayout({
         }
     }
 
-
-
     useEffect(() => {
         let cancelled = false;
 
         async function load() {
             const data = await fetchCurrentUser();
-            console.log("Dashboard /me:", data);
 
             if (cancelled) return;
 
@@ -103,60 +94,68 @@ export default function DashboardLayout({
     }
 
     return (
-        <SidebarProvider >
-            <AppSidebar/>
-            <SidebarInset className="scrollbar-hide h-screen overflow-y-auto" >
-                <header className="flex h-16 shrink-0 items-center gap-2 ">
-                    <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1" />
-                        {/* <Separator
-                            orientation="vertical"
-                            className="scale-130 mr-1 data-[orientation=vertical]:h-4"
-                        /> */}
-                        <Breadcrumb>
-                            <BreadcrumbList className="flex items-center gap-2">
-                                {isRootDashboard ? (
-                                    <BreadcrumbItem>
-                                        <span className="glass-card py-1 px-1.5 text-foreground hover:text-[var(--border)]">Dashboard</span>
-                                    </BreadcrumbItem>
-                                ) : (
-                                    <>
-                                        <BreadcrumbItem className="hidden md:block">
-                                            <BreadcrumbLink href="/dashboard" className="glass-card py-1 px-1.5 text-foreground hover:text-[var(--border)]">
-                                                Dashboard
-                                            </BreadcrumbLink>
-                                        </BreadcrumbItem>
+        <SidebarProvider>
+            <AppSidebar user={user} />
 
-                                        {secondCrumbLabel && secondCrumbHref && (
-                                            <>
-                                                    <BreadcrumbSeparator className="glass-card p-0.5 hidden md:block text-foreground" />
-                                                <BreadcrumbItem className="hidden md:block">
-                                                    <BreadcrumbLink href={secondCrumbHref} className="glass-card py-1 px-1.5 text-foreground hover:text-[var(--border)]">
-                                                        {secondCrumbLabel}
-                                                    </BreadcrumbLink>
-                                                </BreadcrumbItem>
-                                            </>
-                                        )}
+            <SidebarInset className="h-screen overflow-hidden bg-background">
+                <header className="flex h-16 shrink-0 items-center">
+                    <div className="flex w-full items-center justify-between px-4">
+                        <div className="flex items-center gap-3">
+                            <SidebarTrigger className="-ml-1" />
 
-                                        <BreadcrumbSeparator className="glass-card p-0.5 hidden md:block text-foreground" />
-
+                            <Breadcrumb>
+                                <BreadcrumbList className="flex items-center gap-2">
+                                    {isRootDashboard ? (
                                         <BreadcrumbItem>
-                                            <BreadcrumbPage className="glass-card py-1 px-1.5 text-foreground hover:text-[var(--border)]">
-                                                {currentPageLabel}
-                                            </BreadcrumbPage>
+                                            <span className="glass-crumb">Dashboard</span>
                                         </BreadcrumbItem>
-                                    </>
-                                )}
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                                    ) : (
+                                        <>
+                                            <BreadcrumbItem className="hidden md:block">
+                                                <Link href="/dashboard" className="glass-crumb">
+                                                    Dashboard
+                                                </Link>
+                                            </BreadcrumbItem>
+
+                                            {secondCrumbLabel && secondCrumbHref && (
+                                                <>
+                                                    <BreadcrumbSeparator className="hidden md:block text-muted-foreground" />
+                                                    <BreadcrumbItem className="hidden md:block">
+                                                        <Link
+                                                            href={secondCrumbHref}
+                                                            className="glass-crumb"
+                                                        >
+                                                            {secondCrumbLabel}
+                                                        </Link>
+                                                    </BreadcrumbItem>
+                                                </>
+                                            )}
+
+                                            <BreadcrumbSeparator className="hidden md:block text-muted-foreground" />
+
+                                            <BreadcrumbItem>
+                                                <BreadcrumbPage className="glass-crumb">
+                                                    {currentPageLabel}
+                                                </BreadcrumbPage>
+                                            </BreadcrumbItem>
+                                        </>
+                                    )}
+                                </BreadcrumbList>
+                            </Breadcrumb>
+                        </div>
+
+                        <div className="hidden items-center gap-3 md:flex">
+                            <button className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
+                                <span>01.08.2022 - 31.08.2022</span>
+                            </button>
+                        </div>
                     </div>
                 </header>
 
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                <div className="ml-12 mt-4 flex flex-1 flex-col gap-4 rounded-tl-4xl bg-[var(--accento)] pr-2 pt-0">
                     {children}
                 </div>
             </SidebarInset>
         </SidebarProvider>
     );
-
 }

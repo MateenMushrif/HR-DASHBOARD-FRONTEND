@@ -218,7 +218,7 @@ export default function EditEmployeePage() {
     return (
         <div className="p-4 lg:p-6">
             {/* Form card */}
-            <div className="glass-card max-w-xl mx-auto p-1">
+            <div className="max-w-xl mx-auto">
                 <div className="inner-card">
                     {error && (
                         <div className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -244,7 +244,7 @@ export default function EditEmployeePage() {
                                         First name <span className="text-destructive">*</span>
                                     </label>
                                     <input
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={firstName}
                                         onChange={(e) => setFirstName(e.target.value)}
                                     />
@@ -254,7 +254,7 @@ export default function EditEmployeePage() {
                                         Last name <span className="text-destructive">*</span>
                                     </label>
                                     <input
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={lastName}
                                         onChange={(e) => setLastName(e.target.value)}
                                     />
@@ -267,7 +267,7 @@ export default function EditEmployeePage() {
                                 </label>
                                 <input
                                     type="email"
-                                    className="glass-input"
+                                    className="glass-input bg-input"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
@@ -279,7 +279,7 @@ export default function EditEmployeePage() {
                                         Phone
                                     </label>
                                     <input
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                     />
@@ -289,7 +289,7 @@ export default function EditEmployeePage() {
                                         Role
                                     </label>
                                     <input
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={role}
                                         onChange={(e) => setRole(e.target.value)}
                                     />
@@ -316,7 +316,7 @@ export default function EditEmployeePage() {
                                         Department
                                     </label>
                                     <select
-                                        className="glass-input cursor-pointer"
+                                        className="glass-input bg-input cursor-pointer"
                                         value={departmentId}
                                         onChange={(e) => setDepartmentId(e.target.value)}
                                     >
@@ -334,7 +334,7 @@ export default function EditEmployeePage() {
                                         Status
                                     </label>
                                     <select
-                                        className="glass-input cursor-pointer"
+                                        className="glass-input bg-input cursor-pointer"
                                         value={status}
                                         onChange={(e) => setStatus(e.target.value)}
                                     >
@@ -370,7 +370,7 @@ export default function EditEmployeePage() {
                                     </label>
                                     <input
                                         type="date"
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={dateOfJoining}
                                         onChange={(e) => setDateOfJoining(e.target.value)}
                                     />
@@ -382,7 +382,7 @@ export default function EditEmployeePage() {
                                     <input
                                         type="number"
                                         min={0}
-                                        className="glass-input"
+                                        className="glass-input bg-input"
                                         value={salary}
                                         onChange={(e) => setSalary(e.target.value)}
                                     />
@@ -395,7 +395,7 @@ export default function EditEmployeePage() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="inline-flex items-center rounded-full px-5 py-2 text-sm font-medium
+                                className="inline-flex items-center rounded-full px-5 py-2 text-sm font-semibold
                   bg-primary text-primary-foreground shadow-sm
                   hover:opacity-90 transition disabled:opacity-60"
                             >

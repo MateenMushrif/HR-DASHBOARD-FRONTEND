@@ -1,22 +1,16 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-export function getToken() {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("token");
-}
+// export function getToken() {
+//     if (typeof window === "undefined") return null;
+//     return localStorage.getItem("token");
+// }
 
 export async function fetchCurrentUser() {
     if (typeof window === "undefined") return null;
 
-    const token = getToken();
-
-    if (!token) return null;
-
     try {
         const res = await fetch(`${API_URL}/me`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            credentials: "include", // 🔥 SEND COOKIES
         });
 
         if (!res.ok) {
@@ -31,26 +25,22 @@ export async function fetchCurrentUser() {
     }
 }
 
-// 🔴 LOGOUT helper
+
+
+// ✅ LOGOUT helper (cookie-based auth)
 export async function logout() {
     if (typeof window === "undefined") return;
 
-    const token = getToken();
-
     try {
-        if (token) {
-            await fetch(`${API_URL}/auth/logout`, {
-                method: "POST",
-                credentials: "include", // 🔥 SEND COOKIES TO BACKEND
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        }
+        await fetch(`${API_URL}/auth/logout`, {
+            method: "POST",
+            credentials: "include", // 🔥 REQUIRED so cookie is sent
+        });
     } catch (err) {
         console.error("logout | error:", err);
-        // even if backend fails, we still clear token on client
+        // even if this fails, auth cookie will expire eventually
     }
 
-    localStorage.removeItem("token");
+    // Optional but recommended:
+    window.location.href = "/login";
 }

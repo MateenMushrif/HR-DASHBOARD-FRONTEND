@@ -1,0 +1,34 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="none"/>
+
+  <!-- Soft purple blob -->
+  <circle cx="250" cy="160" r="220" fill="url(#gradPurple)" opacity="0.9"/>
+
+  <!-- Soft blue blob -->
+  <ellipse cx="1350" cy="200" rx="260" ry="200" fill="url(#gradBlue)" opacity="0.85"/>
+
+  <!-- Bottom cyan glow -->
+  <ellipse cx="800" cy="880" rx="420" ry="260" fill="url(#gradCyan)" opacity="0.8"/>
+
+  <!-- Slight overlay shape for more "designed" feel -->
+  <path d="M200 520C400 420 650 430 820 520C990 610 1230 620 1450 540" 
+        stroke="rgba(255,255,255,0.18)" stroke-width="80" stroke-linecap="round"/>
+
+  <defs>
+    <radialGradient id="gradPurple" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+        gradientTransform="translate(250 160) rotate(45) scale(260)">
+      <stop stop-color="#C28BFF"/>
+      <stop offset="1" stop-color="#C28BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gradBlue" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+        gradientTransform="translate(1350 200) rotate(45) scale(320)">
+      <stop stop-color="#6C8BFF"/>
+      <stop offset="1" stop-color="#6C8BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gradCyan" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+        gradientTransform="translate(800 880) rotate(90) scale(360 260)">
+      <stop stop-color="#70E0FF"/>
+      <stop offset="1" stop-color="#70E0FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

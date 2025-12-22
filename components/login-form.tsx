@@ -55,6 +55,7 @@ export function LoginForm({
       }
 
       router.push("/dashboard");
+      
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Something went wrong";
