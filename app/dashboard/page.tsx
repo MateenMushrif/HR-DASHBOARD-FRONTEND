@@ -39,40 +39,81 @@ function StatCard({ label, value, sublabel, accent }: StatCardProps) {
 }
 
 export default function Page() {
-    const [chartData, setChartData] = React.useState<HirePoint[]>([]);
-    const [chartLoading, setChartLoading] = React.useState(true);
-    const [chartError, setChartError] = React.useState<string | null>(null);
+
+    const [dashboardData, setDashboardData] = React.useState<{
+        totalEmployees: number;
+        internsCount: number;
+        onLeaveCount: number;
+        onLeaveEmployees: {
+            id: number;
+            firstName: string;
+            lastName: string;
+            role: string | null;
+            department: string | null;
+        }[];
+        departmentCounts: {
+            department: string;
+            count: number;
+        }[];
+        hiresLast6Months: HirePoint[];
+    } | null>(null);
+
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        async function loadStats() {
+        async function loadDashboard() {
             try {
-                setChartLoading(true);
-                const token = localStorage.getItem("token");
-                if (!token) return;
+                setLoading(true);
+                setError(null);
 
-                const res = await fetch(
-                    `${API_URL}/api/employees/stats/hires-last-6-months`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    setError("Not authenticated");
+                    return;
+                }
+
+                const res = await fetch(`${API_URL}/api/dashboard`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
                 const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error(data.message || "Failed to load stats");
+                if (!res.ok) {
+                    throw new Error(data.message || "Failed to load dashboard");
+                }
 
-                setChartData(data.points ?? []);
-            } catch (err: any) {
-                setChartError(err.message || "Something went wrong");
+                setDashboardData(data);
+                console.log("DASHBOARD RESPONSE:", data);
+            } catch (err: unknown) {
+                const message =
+                    err instanceof Error ? err.message : "Something went wrong";
+                setError(message);
             } finally {
-                setChartLoading(false);
+                setLoading(false);
             }
         }
 
-        loadStats();
+        loadDashboard();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="flex h-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-t-primary" />
+            </div>
+        );
+    }
+
+    if (error || !dashboardData) {
+        return (
+            <div className="flex h-full items-center justify-center text-destructive">
+                {error ?? "Failed to load dashboard"}
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-[calc(100vh-4rem)] flex-col px-12 py-4">
@@ -87,19 +128,19 @@ export default function Page() {
             {/* Scrollable content area */}
             <div className="pt-4 flex-1 overflow-y-auto pb-4 py-2 pr-2 scrollbar-hide ">
 
-                <section className="grid auto-rows-[minmax(150px,auto)] gap-4 lg:grid-cols-4">
+                <section className="grid min-w-0 auto-rows-[minmax(150px,auto)] gap-4 lg:grid-cols-4">
 
                     {/* Card 1 */}
                     <StatCard
                         label="Total Employees"
-                        value={48}
+                        value={dashboardData.totalEmployees}
                         sublabel="+6 compared to last month"
                     />
 
                     {/* Card 2 */}
                     <StatCard
                         label="Active Today"
-                        value={36}
+                        value={dashboardData.totalEmployees - dashboardData.onLeaveCount}
                         sublabel="75% of total workforce"
                     />
 
@@ -112,8 +153,13 @@ export default function Page() {
                             Workforce breakdown
                         </p>
                         <p className="text-xl font-semibold">Employees vs interns</p>
-                        <div className="mt-3 flex flex-1 items-center justify-center">
-                            <ChartPieDonutText />
+                        <div className="mt-3 -mx-2 flex flex-1 items-center justify-center">
+                            <ChartPieDonutText
+                                employeesCount={
+                                    dashboardData.totalEmployees - dashboardData.internsCount
+                                }
+                                internsCount={dashboardData.internsCount}
+                            />
                         </div>
                     </div>
 
@@ -126,8 +172,11 @@ export default function Page() {
                             Presence status
                         </p>
                         <p className="text-xl font-semibold">Present vs leave</p>
-                        <div className="mt-3 flex flex-1 items-center justify-center">
-                            <ChartPieDonutText />
+                        <div className="mt-3 -mx-2 flex flex-1 items-center justify-center">
+                            <ChartPieDonutText
+                                employeesCount={dashboardData.totalEmployees - dashboardData.internsCount}
+                                internsCount={dashboardData.internsCount}
+                            />
                         </div>
                     </div>
 
@@ -148,7 +197,7 @@ export default function Page() {
 
                     {/* Card 7 – hiring dynamics */}
                     <div
-                        className="glass-card flex flex-col p-4 lg:col-span-2 border-b-[6px]"
+                        className="glass-card flex min-w-0 flex-col p-4 lg:col-span-2 border-b-[6px]"
                         style={{ borderBottomColor: "var(--sidebar-primary)" }}
                     >
                         <div className="mb-2 flex items-center justify-between">
@@ -158,22 +207,14 @@ export default function Page() {
                             </span>
                         </div>
 
-                        {chartLoading ? (
-                            <div className="flex h-[200px] items-center justify-center">
-                                <div className="h-7 w-7 animate-spin rounded-full border-2 border-muted border-t-primary" />
-                            </div>
-                        ) : chartError ? (
-                            <p className="text-xs text-destructive">{chartError}</p>
-                        ) : (
-                            <div className="min-h-[200px]">
-                                <StackedAreaChart data={chartData} />
-                            </div>
-                        )}
+                        <div className="min-h-[200px]">
+                            <StackedAreaChart data={dashboardData.hiresLast6Months} />
+                        </div>
                     </div>
 
                     {/* Card 11 – Employees on leave */}
                     <div
-                        className="glass-card flex flex-col p-4 lg:col-span-2 border-b-[6px]"
+                        className="glass-card flex min-w-0 flex-col p-4 lg:col-span-2 border-b-[6px]"
                         style={{ borderBottomColor: "var(--sidebar-primary)" }}
                     >
                         <div className="mb-2 flex items-center justify-between">
@@ -183,13 +224,18 @@ export default function Page() {
                             </span>
                         </div>
                         <div className="overflow-hidden rounded-md">
-                            <EmployeesOnLeaveCard />
+                            <div className="mt-2 text-base font-medium text-foreground">
+                                <EmployeesOnLeaveCard
+                                    employees={dashboardData.onLeaveEmployees}
+                                    loading={false}
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Card 10 – Headcount chart */}
                     <div
-                        className="glass-card flex flex-col p-4 lg:col-span-2 border-b-[6px]"
+                        className="glass-card flex min-w-0 flex-col p-4 lg:col-span-2 border-b-[6px]"
                         style={{ borderBottomColor: "var(--sidebar-primary)" }}
                     >
                         <div className="mb-2 flex items-center justify-between">
@@ -198,7 +244,9 @@ export default function Page() {
                                 Total employees in each department
                             </span>
                         </div>
-                        <EmployeesByDepartmentChart />
+                        <EmployeesByDepartmentChart
+                            departmentCounts={dashboardData.departmentCounts}
+                        />
                     </div>
 
                     {/* Card 8 */}

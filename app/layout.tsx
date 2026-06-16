@@ -54,7 +54,7 @@ export default function RootLayout({
           {themeInit}
         </Script>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden `}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden bg-[var(--background)] text-foreground`}>
         {children}
       </body>
     </html>

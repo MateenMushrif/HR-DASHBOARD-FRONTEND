@@ -74,7 +74,7 @@ function CustomTooltip(
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ data }) => {
     return (
-        <div className="w-full h-[240px] md:h-[260px] lg:h-[280px]">
+        <div className="w-full min-h-[240px] h-[240px] md:h-[260px] lg:h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={data}

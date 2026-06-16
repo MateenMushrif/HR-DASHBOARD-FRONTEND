@@ -154,6 +154,48 @@ function DraggableRow({ row }: { row: Row<RowType> }) {
 export function DataTable({ data: initialData }: { data: RowType[] }) {
     const [data, setData] = React.useState<RowType[]>(() => initialData);
     const [rowSelection, setRowSelection] = React.useState({});
+
+    const [departments, setDepartments] = React.useState<
+        { id: number; name: string }[]
+    >([]);
+
+    React.useEffect(() => {
+        let cancelled = false;
+
+        async function loadDepartments() {
+            try {
+                const token = localStorage.getItem("token");
+
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"}/api/departments`,
+                    {
+                        headers: token
+                            ? { Authorization: `Bearer ${token}` }
+                            : undefined,
+                    }
+                );
+
+                if (!res.ok) return;
+
+                const data: { departments: { id: number; name: string }[] } =
+                    await res.json();
+
+                if (!cancelled) {
+                    setDepartments(data.departments ?? []);
+                }
+            } catch {
+                // silent fail
+            }
+        }
+
+        loadDepartments();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -209,6 +251,7 @@ export function DataTable({ data: initialData }: { data: RowType[] }) {
                 return (
                     <TableCellViewer
                         item={{ ...item, header: fullName }}
+                        departments={departments}
                         onUpdated={(updated) => {
                             setData((prev) =>
                                 prev.map((r) => (r.id === updated.id ? updated : r))
@@ -503,7 +546,7 @@ export function DataTable({ data: initialData }: { data: RowType[] }) {
                                     {table.getHeaderGroups().map((headerGroup) => (
                                         <TableRow key={headerGroup.id}>
                                             {headerGroup.headers.map((header) => (
-                                                <TableHead key={header.id} colSpan={header.colSpan}>
+                                                <TableHead key={header.id} colSpan={header.colSpan} className="sticky top-0 z-10 bg-primary/90 text-background">
                                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                                 </TableHead>
                                             ))}
@@ -728,9 +771,11 @@ export function DataTable({ data: initialData }: { data: RowType[] }) {
 /* TableCellViewer: Drawer shows full employee details and editing inputs */
 function TableCellViewer({
     item,
+    departments,
     onUpdated,
 }: {
     item: RowType & { header?: string };
+    departments: { id: number; name: string }[];
     onUpdated: (row: RowType) => void;
 }) {
 
@@ -750,9 +795,7 @@ function TableCellViewer({
         isIntern: !!item.isIntern,
     });
 
-    const [departments, setDepartments] = React.useState<{ id: number; name: string }[]>([]);
     const [departmentId, setDepartmentId] = React.useState<string>("");
-
 
     React.useEffect(() => {
         setLocal({
@@ -770,51 +813,22 @@ function TableCellViewer({
     }, [item]);
 
     React.useEffect(() => {
-        let cancelled = false;
+        if (!departments.length) return;
 
-        async function loadDepartments() {
-            try {
-                const token = localStorage.getItem("token");
+        if (item.department) {
+            const match = departments.find(
+                (d) => d.name === item.department
+            );
 
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"}/api/departments`,
-                    {
-                        headers: token
-                            ? { Authorization: `Bearer ${token}` }
-                            : undefined,
-                    }
-                );
-
-                if (!res.ok) return;
-
-                const data: { departments: { id: number; name: string }[] } =
-                    await res.json();
-
-                if (cancelled) return;
-
-                setDepartments(data.departments ?? []);
-
-                // If employee already has a department name, map it to an id
-                if (item.department) {
-                    const match = data.departments.find(
-                        (d) => d.name === item.department
-                    );
-                    if (match) {
-                        setDepartmentId(String(match.id));
-                    }
-                }
-            } catch {
-                // silent fail — drawer should still work
+            if (match) {
+                setDepartmentId(String(match.id));
+            } else {
+                setDepartmentId("");
             }
+        } else {
+            setDepartmentId("");
         }
-
-        loadDepartments();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [item.department]);
-
+    }, [item.department, departments]);
 
     return (
         <Drawer direction={isMobile ? "bottom" : "right"}>

@@ -11,169 +11,99 @@ import {
     ResponsiveContainer,
 } from "recharts"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"
-
-interface Department {
-    id: number
-    name: string
-    description?: string
-    createdAt: string
-    updatedAt: string
+interface CustomTooltipProps {
+    active?: boolean
+    payload?: Array<{ value: number }>
+    label?: string
 }
 
-interface Employee {
-    id: number
-    name?: string
-    fullName?: string
-    employeeName?: string
-    firstName?: string
-    lastName?: string
-    department?: string | Department
-    status?: "ACTIVE" | "ON_LEAVE" | "INACTIVE" | string
-    isIntern?: boolean
-}
-
-interface DeptPoint {
-    department: string
-    employees: number
-}
-
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
     if (!active || !payload || payload.length === 0) return null
 
     const item = payload[0]
 
     return (
-            <div className="tooltip-card px-3 py-2 text-xs min-w-30">
-                <p className="mb-1 text-[12px] text-[var(--chart-text)]">{label}</p>
-                <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-muted-foreground">
-                        Employees
-                    </span>
-                    <span className="text-[15px] text-foreground font-semibold">
-                        {item.value}
-                    </span>
-                </div>
+        <div className="rounded-lg border border-border bg-card shadow-md px-3 py-2 text-xs backdrop-blur-sm min-w-[120px]">
+            <p className="mb-1 text-[12px] text-[var(--chart-text)]">{label}</p>
+            <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-muted-foreground">
+                    Employees
+                </span>
+                <span className="text-[15px] text-foreground font-semibold">
+                    {item.value}
+                </span>
             </div>
+        </div>
     )
 }
 
-export default function EmployeesByDepartmentChart() {
-    const [data, setData] = React.useState<DeptPoint[]>([])
-    const [loading, setLoading] = React.useState(true)
-    const [error, setError] = React.useState<string | null>(null)
+interface EmployeesByDepartmentChartProps {
+    departmentCounts: {
+        department: string;
+        count: number;
+    }[];
+}
 
-    React.useEffect(() => {
-        async function fetchEmployees() {
-            try {
-                setLoading(true)
-                setError(null)
+export default function EmployeesByDepartmentChart({
+    departmentCounts,
+}: EmployeesByDepartmentChartProps) {
 
-                const token = localStorage.getItem("token")
-                if (!token) {
-                    setError("Not authenticated")
-                    setLoading(false)
-                    return
-                }
-
-                const res = await fetch(`${API_URL}/api/employees`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-
-                if (!res.ok) {
-                    const json = await res.json().catch(() => ({}))
-                    throw new Error(json.message || "Failed to load employees")
-                }
-
-                const json = await res.json()
-                const employees: Employee[] = json.employees || []
-
-                const map = new Map<string, number>()
-
-                for (const emp of employees) {
-                    const dept =
-                        typeof emp.department === "string"
-                            ? emp.department
-                            : emp.department?.name ||
-                            "Unknown"
-
-                    map.set(dept, (map.get(dept) || 0) + 1)
-                }
-
-                const chartData: DeptPoint[] = Array.from(map.entries()).map(
-                    ([department, employees]) => ({
-                        department,
-                        employees,
-                    }),
-                )
-
-                setData(chartData)
-            } catch (err: any) {
-                console.error("Error fetching employees for dept chart:", err)
-                setError(err.message || "Something went wrong")
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchEmployees()
-    }, [])
-
-    if (loading) {
-        return (
-            <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted border-t-primary mr-2" />
-                Loading department data...
-            </div>
-        )
-    }
-
-    if (error) {
-        return (
-            <div className="flex flex-1 items-center justify-center text-xs text-destructive">
-                Failed to load: {error}
-            </div>
-        )
-    }
-
-    if (data.length === 0) {
-        return (
-            <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
-                No employees found.
-            </div>
-        )
-    }
+    const chartData = departmentCounts.map((d) => ({
+        department: d.department,
+        employees: d.count,
+    }));
 
     return (
-        <div className="w-full h-[240px] md:h-[260px] lg:h-[280px]">
+        <div className="w-full min-h-[260px] h-[260px] md:h-[280px] lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                    data={data}
+                    data={chartData}
                     margin={{
-                        top: 16,
-                        right: 12,
-                        left: 0,
-                        bottom: 20,
+                        top: 10,
+                        right: 10,
+                        left: -10,
+                        bottom: 5,
                     }}
                 >
+                    <defs>
+                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop
+                                offset="0%"
+                                stopColor="var(--chart-3)"
+                                stopOpacity={0.9}
+                            />
+                            <stop
+                                offset="100%"
+                                stopColor="var(--chart-3)"
+                                stopOpacity={0.6}
+                            />
+                        </linearGradient>
+                    </defs>
+
                     <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="hsla(0, 0%, 0%, 0.00)"
+                        strokeDasharray="4 4"
+                        stroke="var(--border)"
                         vertical={false}
+                        opacity={0.3}
                     />
+
                     <XAxis
                         dataKey="department"
                         axisLine={false}
                         tickLine={false}
-                        tickMargin={8}
+                        interval={0}
+                        angle={-20}
+                        textAnchor="end"
+                        height={50}
+                        tickFormatter={(value: string) =>
+                            value.length > 14 ? value.slice(0, 14) + "…" : value
+                        }
                         tick={{
                             fill: "var(--muted-foreground)",
                             fontSize: 12,
                         }}
                     />
+
                     <YAxis
                         axisLine={false}
                         tickLine={false}
@@ -183,15 +113,18 @@ export default function EmployeesByDepartmentChart() {
                             fontSize: 12,
                         }}
                     />
+
                     <Tooltip
                         content={<CustomTooltip />}
-                        cursor={{ fill: "hsla(0, 0%, 80%, 0.43)" }}
+                        cursor={{ fill: "rgba(0,0,0,0.04)" }}
                     />
+
                     <Bar
                         dataKey="employees"
                         name="Employees"
-                        radius={[6, 6, 2, 2]}
-                        fill="var(--chart-3)"
+                        radius={[8, 8, 4, 4]}
+                        fill="url(#barGradient)"
+                        animationDuration={500}
                     />
                 </BarChart>
             </ResponsiveContainer>

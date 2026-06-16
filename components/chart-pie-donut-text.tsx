@@ -14,64 +14,18 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"
-
-interface Employee {
-    id: number
-    isIntern?: boolean
-}
-
 export const description = "Employees vs interns donut with total in center"
 
-export default function EmployeesInternsDonutChart() {
-    const [employeesCount, setEmployeesCount] = React.useState(0)
-    const [internsCount, setInternsCount] = React.useState(0)
-    const [loading, setLoading] = React.useState(true)
-    const [error, setError] = React.useState<string | null>(null)
+interface EmployeesInternsDonutChartProps {
+    employeesCount: number;
+    internsCount: number;
+}
 
-    React.useEffect(() => {
-        async function fetchEmployees() {
-            try {
-                setLoading(true)
-                setError(null)
+export default function EmployeesInternsDonutChart({
+    employeesCount,
+    internsCount,
+}: EmployeesInternsDonutChartProps) {
 
-                const token = localStorage.getItem("token")
-                if (!token) {
-                    setError("Not authenticated")
-                    setLoading(false)
-                    return
-                }
-
-                const res = await fetch(`${API_URL}/api/employees`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-
-                if (!res.ok) {
-                    const data = await res.json().catch(() => ({}))
-                    throw new Error(data.message || "Failed to load employees")
-                }
-
-                const data = await res.json()
-                const employees: Employee[] = data.employees || []
-
-                const interns = employees.filter((e) => e.isIntern === true).length
-                const regulars = employees.length - interns
-
-                setInternsCount(interns)
-                setEmployeesCount(regulars)
-            } catch (err: any) {
-                console.error("Error fetching employees for donut chart:", err)
-                setError(err.message || "Something went wrong")
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchEmployees()
-    }, [])
 
     const chartData = React.useMemo(
         () => [
@@ -108,30 +62,6 @@ export default function EmployeesInternsDonutChart() {
         [chartData],
     )
 
-    // Loading state
-    if (loading) {
-        return (
-            <Card className="flex h-full w-full flex-col bg-transparent border-0 shadow-none">
-                <CardContent className="flex flex-1 items-center justify-center">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
-                </CardContent>
-            </Card>
-        )
-    }
-
-    // Error state
-    if (error) {
-        return (
-            <Card className="flex h-full w-full flex-col bg-transparent border-0 shadow-none">
-                <CardContent className="flex flex-1 items-center justify-center">
-                    <p className="text-xs text-destructive">
-                        Failed to load team mix: {error}
-                    </p>
-                </CardContent>
-            </Card>
-        )
-    }
-
     // No data
     if (totalVisitors === 0) {
         return (
@@ -151,7 +81,7 @@ export default function EmployeesInternsDonutChart() {
         <Card className="flex h-full w-full flex-col bg-transparent border-0 shadow-none p-0">
             <CardContent className="flex-1 pb-0">
                 {/* This wrapper makes it behave nicely in a grid cell */}
-                <div className="w-full h-[220px] sm:h-[240px] lg:h-[260px]">
+                <div className="w-full min-h-[220px] h-[220px] sm:h-[240px] lg:h-[260px]">
                     <ChartContainer
                         config={chartConfig}
                         className="w-full h-full"
