@@ -19,9 +19,9 @@ export default function middleware(req: NextRequest) {
     }
 
     // If NOT logged in → block access to dashboard routes
-    if (!isLoggedIn && isDashboardRoute) {
-        return NextResponse.redirect(new URL("/login", req.url));
-    }
+    // if (!isLoggedIn && isDashboardRoute) {
+    //     return NextResponse.redirect(new URL("/login", req.url));
+    // }
 
     return NextResponse.next();
 }
